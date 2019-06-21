@@ -19,7 +19,7 @@ Tells the composer's name;
 * **singer**  
 Tells who sings (it is useful if there are many versions of different singers);
 * **tune**  
-Tells the tune of the chords.
+Tells the tune of the song.
 
 ### Comments
 
