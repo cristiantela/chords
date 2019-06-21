@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Chords</title>
+</head>
+<body>
+    <a href="https://www.cifraclub.com.br/fleet-foxes/white-winter-hymnal/" target="_blank">https://www.cifraclub.com.br/fleet-foxes/white-winter-hymnal/</a>
+    <script>
+
+var content = `
+
+title: White Winter Hymnal
+composer: Robin Pecknold
+singer: Fleet Foxes
+tune: E
+
+I was following the I was following the
+E
+I was following the pack
+All swallowed in their coats
+                                       F#m
+With scarves of red tied 'round their throats
+To keep their little heads
+From fallin in the snow
+                                   A
+And I turned 'round and there you go
+And, michael, you would fall
+             B7
+And turn the white snow red as strawberries
+In the summertime
+
+E A
+
+# from: https://www.cifraclub.com.br/fleet-foxes/white-winter-hymnal/
+`;
+
+        var div = createElement('div'),
+            titleElement = createElement('div', {
+                fontSize: '1.5em',
+            }),
+            composerElement = createElement('div'),
+            singer = createElement('div'),
+            tune = createElement('div', {
+                fontWeight: 'bold',
+                color: 'orange',
+            }),
+            contentElement = createElement('div', {
+                marginTop: '1em',
+                lineHeight: 2,
+            });
+        
+        div.appendChild(titleElement);
+        div.appendChild(composerElement);
+        div.appendChild(singer);
+        div.appendChild(tune);
+        div.appendChild(contentElement);
+
+        document.body.appendChild(div);
+
+        let lines = content.split('\n');
+
+        let startedContent = false,
+            hasAlreadyInsertedAEmptyLine = false;
+
+        for (let i = 0; i < lines.length; i++) {
+            let line = lines[i];
+
+            if (line.trim().length === 0 && !startedContent) {
+                continue;
+            }
+
+            if (line.trim().length === 0 && !hasAlreadyInsertedAEmptyLine) {
+                hasAlreadyInsertedAEmptyLine = true;
+
+                let element = createElement('div', {
+                    marginTop: '1em',
+                });
+
+                contentElement.appendChild(element);
+            }
+
+            if (/^[\t ]*#/.test(line)) {
+                continue;
+            } else if (tag('title', line)) {
+                titleElement.appendChild(document.createTextNode(tag('title', line)));
+            } else if (tag('composer', line)) {
+                composerElement.appendChild(document.createTextNode(tag('composer', line)));
+            } else if (tag('singer', line)) {
+                singer.appendChild(document.createTextNode(tag('singer', line)));
+            } else if (tag('tune', line)) {
+                tune.appendChild(document.createTextNode(tag('tune', line)));
+            } else {
+                startedContent = true;
+
+                if (line.trim().length === 0) {
+                    continue;
+                }
+
+                hasAlreadyInsertedAEmptyLine = false;
+
+                if (isChordLine(line)) {
+                    let words = getWords(line);
+
+                    if (lines[i + 1] && !isChordLine(lines[i + 1])) {
+                        last = 'chord';
+
+                        let lineElement = createElement('div');
+
+                        let posX = 0,
+                            add = 0;
+
+                        for (let j = 0; j < words.length; j++) {
+                            if (words[j].length === 0) {
+                                continue;
+                            }
+
+                            if (words[j].trim().length === 0) {
+                                lineElement.appendChild(document.createTextNode(lines[i + 1].substr(posX, words[j].length + add)));
+                                posX += words[j].length;
+                                posX += add;
+                            } else {
+                                add = words[j].length;
+
+                                let chord = createElement('div', {
+                                    marginTop: '-1em',
+                                    display: 'inline-block',
+                                    position: 'absolute',
+                                    fontWeight: 'bold',
+                                    color: 'orange',
+                                });
+
+                                chord.appendChild(document.createTextNode(words[j]));
+
+                                lineElement.appendChild(chord);
+                            }
+                        }
+
+                        lineElement.appendChild(document.createTextNode(lines[i + 1].substr(posX)));
+
+                        contentElement.appendChild(lineElement);
+
+                        i++;
+                    } else {
+                        let chord = createElement('div', {
+                            fontWeight: 'bold',
+                            color: 'orange',
+                        });
+
+                        chord.appendChild(document.createTextNode(words.filter(word => word.trim().length).join(' ')));
+
+                        contentElement.appendChild(chord);
+                    }
+                } else {
+                    let lineElement = createElement('div');
+
+                    last = null;
+
+                    lineElement.appendChild(document.createTextNode(line));
+
+                    contentElement.appendChild(lineElement);
+                }
+            }
+        }
+
+        function createElement (tagName, style) {
+            let element = document.createElement(tagName)
+
+            if (style) {
+                for (let attribute in style) {
+                    element.style[attribute] = style[attribute];
+                }
+            }
+
+            return element;
+        }
+
+        function tag (name, line) {
+            let regExp = new RegExp(`^[\t ]*${name}:[\t ]*`);
+
+            if (!regExp.test(line)) {
+                return null;
+            }
+
+            return line.split(regExp)[1];
+        }
+
+        function getWords (line) {
+            return line.split(/( +)/);
+        }
+
+        function isChordLine (line) {
+            let chords = /[CDEFGAB][7]?#?m?/,
+                words = getWords(line);
+
+            if (words.length === 0) {
+                return false;
+            }
+
+            if (words.filter(word => word.trim().length).length === words.filter(word => chords.test(word)).length) {
+                return true;
+            }
+
+            return false;
+        }
+
+    </script>
+</body>
+</html>
